@@ -95,25 +95,6 @@
 
 <script>
 <![CDATA[
-
-
---Helper for priniting nested table
-function deep_print(tbl)
-	if type(tbl) == "table" then
-		Note("Table:")
-		for i, v in pairs(tbl) do
-			if type(v) == "table" then
-				Note("Table:")
-				deep_print(v)
-			else 
-				Note(i,":", v) 
-			end
-		end
-	else
-		Note(tbl)
-	end
-end
-
 function showHelp()
 	username = GetVariable("username")
 	password = GetVariable("password")
