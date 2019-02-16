@@ -12,6 +12,8 @@ This is the auto voter I wrote with Lua sockets to handle the monotonous task of
 
 ## Lotj\_SpaceHud
 
+![spacehud](https://user-images.githubusercontent.com/13019467/52906558-741c5e00-321c-11e9-9710-07cf850521fe.gif)
+
 My latest and greatest creation based on the premise of asking myself, "How cool would it be to have an Eve Online like space overview for Lotj?"
 
 It's mostly a finished product, but my interest in unraveling the intracacies of scroll bars and their operation inside of a mini window has waned. Therefore, the current scrollbars only support single click functionality for moving up and down, while the scrollbar itself doesn't work in any capacity and holding down the arrows to scroll doesn't work either. Motivating myself to even complete that much was a chore, as I personally rarely use scroll arrows with the advent of the mouse wheel. However, I do feel like a draggable scroll bar would be a boon. Alas, a project for another day perhaps. 
