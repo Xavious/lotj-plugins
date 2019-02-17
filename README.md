@@ -3,7 +3,7 @@
 This is my personal repository of Lotj related plugins for MUSHclient.
 
 ## Installation
-To download the individual files from GitHub, without their markup on it, you need to click the "raw" button and download the file that way. Here's a quick and simple demonstration of how to download and install a plugin in MUSHclient:
+To download a plugin from GitHub, without their markup on it, you need to click the individual plugin you want, click the "raw" button, and download it that way. Here's a quick and simple demonstration of how to download and install a plugin in MUSHclient:
 
 ![plugininstall](https://user-images.githubusercontent.com/13019467/52906755-f9097680-3220-11e9-9862-b38e9d9108ae.gif)
 
