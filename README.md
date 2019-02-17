@@ -15,6 +15,8 @@ The mapper that most are probably familiar with if you've downloaded "LotjClient
 
 This is the auto voter I wrote with Lua sockets to handle the monotonous task of logging into Mudconnector and voting for Lotj on a daily schedule.
 
+*This is currently broken ever since MudConnector updated their website*
+
 ## Lotj\_SpaceHud
 
 My latest and greatest creation based on the premise of asking myself, "How cool would it be to have an Eve Online like space overview for Lotj?"
