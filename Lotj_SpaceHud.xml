@@ -784,9 +784,8 @@ end
 
 function drawWindow()
   debug("drawWindow")
-  WindowCreate(win, 0, 0, config.width, config.height, miniwin.pos_bottom_right, 0, ColourNameToRGB("black")) -- create window
+  WindowCreate(win, windowinfo.window_left, windowinfo.window_top, config.width, config.height,windowinfo.window_mode, windowinfo.window_flags, ColourNameToRGB("black")) -- create window
   WindowFont (win, font, "Lucida Console", 9)
-  windowinfo = movewindow.install (win, 7)  -- default to 7 (on right, center top/bottom)
   WindowRectOp(win, 5, 0, 0, 0, 0, 5, 15 + 0x1000)
   --Title bar and drag handler
   WindowGradient(win, 2, 2, -2, 20, ColourNameToRGB("darkgray"), ColourNameToRGB("lightgray"), 2)
@@ -1221,8 +1220,13 @@ function triggerProximityAlert(name, line, args, styles)
 end
 
 function OnPluginInstall()
+  windowinfo = movewindow.install (win, 7)  -- default to 7 (on right, center top/bottom)
   world.Note (world.GetPluginInfo(world.GetPluginID (), 3))
   drawWindow()
+end
+
+function OnPluginClose ()
+  WindowShow (win, false)
 end
 
 function OnPluginSaveState()
