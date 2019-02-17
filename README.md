@@ -7,15 +7,15 @@ To download the individual files from GitHub, without their markup on it, you ne
 
 ![plugininstall](https://user-images.githubusercontent.com/13019467/52906755-f9097680-3220-11e9-9862-b38e9d9108ae.gif)
 
-### Lotj\_Mapper
+## Lotj\_Mapper
 
 The mapper that most are probably familiar with if you've downloaded "LotjClient", the preconfigured version of MUSHclient with an assortment of community made plugins already installed.
 
-### Lotj\_Voter
+## Lotj\_Voter
 
 This is the auto voter I wrote with Lua sockets to handle the monotonous task of logging into Mudconnector and voting for Lotj on a daily schedule.
 
-### Lotj\_SpaceHud
+## Lotj\_SpaceHud
 
 My latest and greatest creation based on the premise of asking myself, "How cool would it be to have an Eve Online like space overview for Lotj?"
 
