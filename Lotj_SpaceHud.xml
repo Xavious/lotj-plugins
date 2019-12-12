@@ -1221,7 +1221,7 @@ end
 
 function OnPluginInstall()
   windowinfo = movewindow.install (win, 7)  -- default to 7 (on right, center top/bottom)
-  ColourNote ("black", "yellow",  "           You are using SpaceHud                ")
+  ColourNote ("black", "yellow", "            You are using SpaceHud                ")
   ColourNote ("black", "yellow", "    Type 'spacehelp' for help getting started     ")
   drawWindow()
 end
