@@ -69,6 +69,16 @@
   </send>
   </alias>
   <alias
+   match="vote show password"
+   enabled="y"
+   send_to="12"
+   sequence="100"
+  >
+  <send>
+	showPassword()
+  </send>
+  </alias>
+  <alias
    match="vote set time *"
    enabled="y"
    send_to="12"
@@ -105,7 +115,6 @@ function showHelp()
 	Note("       Lotj Voter       ")
 	Note("----------------------------")
 	Note("Username: "..username)
-	Note("Password: "..password)
 	Note("VoteTime: "..hour)
 	Note("AutoVote: "..auto)
 	Note("----------------------------")
@@ -113,6 +122,7 @@ function showHelp()
 	Note("----------------------------")
 	Note("vote set username <username>")
 	Note("vote set password <password>")
+	Note("vote show password")
 	Note("vote set time <0-23>")
 	Note("vote set auto <on/off>")
 	Note("vote help")
@@ -127,7 +137,12 @@ end
 
 function setPassword(password)
 	SetVariable("password", password)
-	Note("Password set to: "..password)
+	Note("Password set.")
+end
+
+function showPassword()
+	password = GetVariable("password")
+	utils.msgbox ("Your password is: "..password, "Password", "ok", "!", 1)
 end
 
 function setTime(hour)
@@ -165,6 +180,7 @@ function setAuto(auto)
 end
 
 function vote()
+	Note("Initiating voting sequence...")
 	session = postLogin()
 	if session then
 		postVote(session)
@@ -175,33 +191,24 @@ function postLogin()
 	username = GetVariable("username")
 	password = GetVariable("password")
 	http = require "socket.http"
-	url = "http://www.mudconnect.com/SMF/index.php?action=login2"
-	reqbody = "user="..username.."&passwrd="..password.."&cookie=60&hash_passwrd="
+	require "tprint"
+	url = "https://www.mudconnect.com/cgi-bin/login.cgi"
+	reqbody = "mode=DO_LOGIN&uid="..username.."&password="..password
 	Note("Attempting to login to TMC..")
 	b, c, h, s = http.request(url,reqbody)
 	--Parse the session ID and forum cookie from the set-cookie response header.
 	if c == 200 then
-		if string.match(b, "That%s+username%s+does%s+not%s+exist") then
-			Note("TMC: That username does not exist.")
-		elseif string.match(b, "Password%s+incorrect") then
-			Note("TMC: Password incorrect.")
-		elseif string.match(b, "You%s+need%s+to%s+fill%s+in%s+a%s+username.") then
-			Note("TMC: You need to fill in a username.")
-		elseif string.match(b, "You%s+didn't%s+enter%s+your%s+password.") then
-			Note("TMC: You didn't enter your password.")
-		else
-			Note(b)
-			Note("Unknown error while attempting to login.")
-		end
-	elseif c == 302 then
-		php_session = string.match(h["set-cookie"], 'PHPSESSID=[%w]+;')
-		cookie = string.match(h["set-cookie"], 'SMFCookie474=[%w%%]+;')
-		if php_session ~= nil and cookie ~= nil then
+		if string.match(b, "Welcome%sback%sto%sTMC,%slogging%syou%sin...") then
 			Note("Login successful.")
-			session = php_session.." "..cookie
+			_, _, TMC_AUTH, TMC_LT = string.find(b, "%-:%-(%w+)%-:%-(%w+)';")
+			session = "TMC_ID="..username.."; TMC_AUTH="..TMC_AUTH.."; TMC_LT="..TMC_LT
 			return session
+		elseif string.match(b, "Invalid%s+login%s+credentials") then
+			Note("TMC: Invalid login credentials.")
+		elseif string.match(b, "Password%s+is%s+incorrect") then
+			Note("TMC: Password incorrect.")
 		else
-			Note("Error parsing session data.")
+			Note("Unknown error while attempting to login.")
 		end
 	else
 		Note("Unexpected HTTP code.")
@@ -211,38 +218,33 @@ end
 
 function postVote(session)
 	require 'socket.http'
-	local request_body = "mode=VOTE_CONF&mud=Legends+of+the+Jedi&imgsrc="
+	local request_body = "mode=cast_vote&mud=Legends+of+the+Jedi"
 	local response_body = { }
 	Note("Attempting to place vote.")
 	local b, c, h = socket.http.request
 	{
-	  url = "http://www.mudconnect.com/cgi-bin/vote_rank.cgi",
-	  method = "POST",
+	  url = "https://www.mudconnect.com/cgi-bin/vote.cgi?mode=cast_vote&mud=Legends+of+the+Jedi",
+	  method = "GET",
 	  headers = 
 	  {
-		["Content-Type"] = "application/x-www-form-urlencoded",
-		["Referer"] = "http://www.mudconnect.com/cgi-bin/vote_rank.cgi?mud=Legends+of+the+Jedi",
+		["Host"] = "www.mudconnect.com",
+		["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0",
+		["Accept"] = "text/html, */*; q=0.01",
+		["Connection"] = "keep-alive",
+		["X-Requested-With"] = "XMLHttpRequest",
+		["Referer"] = "https://www.mudconnect.com/cgi-bin/search.cgi?mode=mud_listing&mud=Legends+of+the+Jedi",
 		["Cookie"] = session,
+		["content-type"] = "text/html; charset=ISO-8859-1",
 		["Content-Length"] = #request_body,
 	  };
 	  source = ltn12.source.string(request_body);
 	  sink = ltn12.sink.table(response_body)
 	}
-	
 	b = table.concat(response_body)
-	if c == 200 then
-		if string.match(b, "You%s+have%s+already%s+cast%s+your%s+vote%s+for%s+today,%s+please%s+be%s+sure%s+to%s+return%s+tomorrow%s+to%s+vote%s+again!") then
-			Note("TMC: You have already cast your vote for today, please be sure to return tomorrow to vote again!")
-		else
-			Note("Unexpected response for code: "..c)
-		end
-	elseif c == 302 then
-		Note("Vote successful.")
-	elseif c == 500 then
-		Note("Error. Unexpected code: "..c)
-		Note("Try again.")
+	if string.match(b, "Your%s+vote%s+was%s+cast") then
+		Note("TMC: Your vote was cast for Legends of the Jedi. Please note that only 1 daily vote per mud will be counted for each TMC account.")
 	else
-		Note("Error. Unexpected code: "..c)
+		Note("Error: Unexpected response")
 	end
 end
 
