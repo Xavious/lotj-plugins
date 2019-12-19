@@ -180,7 +180,6 @@ function setAuto(auto)
 end
 
 function vote()
-	Note("Initiating voting sequence...")
 	session = postLogin()
 	if session then
 		postVote(session)
