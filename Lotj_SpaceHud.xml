@@ -472,13 +472,13 @@ function updateHud()
     end
     table.sort(sorted_ships, function(a,b)
       if sort_by_proximity_invert < 0 then
-        if a.proximity ~= '?' then
+        if a.proximity ~= '?' and b.proximity ~= '?' then
           return tonumber(a.proximity) < tonumber(b.proximity)
         else
           return a.proximity < b.proximity
         end
       else
-        if a.proximity ~= '?' then
+        if a.proximity ~= '?' and b.proximity ~= '?' then
           return tonumber(a.proximity) > tonumber(b.proximity)
         else
           return a.proximity > b.proximity
