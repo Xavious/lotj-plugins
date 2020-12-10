@@ -15,7 +15,7 @@
    save_state="y"
    date_written="2018-06-26 21:54:30"
    requires="4.94"
-   version="1.0"
+   version="1.5"
    >
 <description trim="y">
 <![CDATA[
@@ -981,9 +981,19 @@ end
 
 --Basically we compare the last full radar capture against our current data.
 --if something exists in ships already, but it's not in shipCandidates, then
---that means it wasn't in the last scan and it should probably be removed.
+--that means it wasn't in the last scan and it should be removed.
 function checkShips()
   debug("checkShips fired")
+  -- Premptively clear projectiles, since they are not uniquely identified
+  -- and will not update/remove properly as a result.
+  if next(ships) then
+    for ship in pairs(ships) do
+      if ships[ship].type == "Projectile" then
+        debug("Object is a projectile")
+        removeShip(ship)
+      end
+    end
+  end
   if next(ship_candidates) then
     for ship_candidate in pairs(ship_candidates) do
       debug("Ship candidate:"..ship_candidate)
