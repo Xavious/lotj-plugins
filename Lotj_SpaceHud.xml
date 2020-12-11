@@ -76,7 +76,7 @@ spacedebug <1/0>     - Turn debugging on (1) or off (0)
   enabled="y"
   name="projectileRadar"
   group="captureSpace"
-  match="^(?P<ship_line>(?P<ship_name>A Heavy Rocket|A Concussion missile|A Torpedo)[\s]+(?P<ship_x>[0-9\-]+) (?P<ship_y>[0-9\-]+) (?P<ship_z>[0-9\-]+))$"
+  match="^(?P<ship_line>(?P<ship_name>(A Heavy Rocket|A Concussion missile|A Torpedo))(?P<incoming> \(Incoming\))?[\s]+(?P<ship_x>[0-9\-]+) (?P<ship_y>[0-9\-]+) (?P<ship_z>[0-9\-]+))$"
   regexp="y"
   script="triggerProjectileRadar"
   sequence="100"
@@ -103,7 +103,7 @@ spacedebug <1/0>     - Turn debugging on (1) or off (0)
   enabled="y"
   name="projectileProximity"
   group="captureSpace"
-  match="^(?P<ship_name>A Heavy Rocket|A Concussion missile|A Torpedo)[ ]+Prox: (?P<ship_proximity>[0-9]+)$"
+  match="^(?P<ship_name>(A Heavy Rocket|A Concussion missile|A Torpedo))(?P<incoming> \(Incoming\))?[ ]+Prox: (?P<ship_proximity>[0-9]+)$"
   regexp="y"
   script="triggerProjectileProximity"
   sequence="100"
@@ -121,7 +121,7 @@ spacedebug <1/0>     - Turn debugging on (1) or off (0)
   enabled="y"
   name="projectileVelocity"
   group="captureSpace"
-  match="^(?P<ship_name>A Heavy Rocket|A Concussion missile|A Torpedo)[ ]+Velocity: (?P<ship_velocity>[0-9]+)$"
+  match="^(?P<ship_name>(A Heavy Rocket|A Concussion missile|A Torpedo))(?P<incoming> \(Incoming\))?[ ]+Velocity: (?P<ship_velocity>[0-9]+)$"
   regexp="y"
   script="triggerProjectileVelocity"
   sequence="100"
@@ -541,11 +541,16 @@ function updateHud()
   for i = scroll_position, ship_count do
     ship_type_color = "dodgerblue"
     ship_name_color = "cyan"
-    --Check for projectiles and remove the trailing numbers that were necessary to uniquely index each one, and color them red
-    if sorted_ships[i].type == "Projectile" then
+    --Check for projectiles and remove the trailing numbers that were necessary to uniquely index each one, and color them red if incoming, white otherwise
+    if string.find(sorted_ships[i].type, "Projectile") then
       sorted_ships[i].name = string.gsub(sorted_ships[i].name, "(%d+)", "")
-      ship_type_color = "red"
-      ship_name_color = "red"
+      if sorted_ships[i].incoming ~= nil then
+        ship_type_color = "red"
+        ship_name_color = "red"
+      else
+        ship_type_color = "white"
+        ship_name_color = "white"
+      end
     end
     left_position = 5
     WindowText(win, font,
@@ -1014,6 +1019,9 @@ function addShip(ship)
   if ship.velocity then
     ships[ship.name].velocity = ship.velocity
   end
+  if ship.incoming then
+    ships[ship.name].incoming = ship.incoming
+  end
 end
 
 function updateShip(ship)
@@ -1033,7 +1041,7 @@ function checkShips()
   -- and will not update/remove properly as a result.
   if next(ships) then
     for ship in pairs(ships) do
-      if ships[ship].type == "Projectile" then
+      if string.find(ships[ship].type, "Projectile") then
         debug("Object is a projectile")
         removeShip(ship)
       end
@@ -1230,6 +1238,10 @@ function triggerProjectileRadar(name, line, args, styles)
   ship_candidates[projectile_name].x = args.ship_x
   ship_candidates[projectile_name].y = args.ship_y
   ship_candidates[projectile_name].z = args.ship_z
+  if args.incoming == " (Incoming)" then
+    ship_candidates[projectile_name].type = ship_candidates[projectile_name].type..args.incoming
+    ship_candidates[projectile_name].incoming = 1
+  end
 end
 
 function triggerFleetRadar(name, line, args, styles)
@@ -1263,6 +1275,10 @@ function triggerProjectileProximity(name, line, args, styles)
   ship_candidates[projectile_name].type = "Projectile"
   ship_candidates[projectile_name].name = projectile_name
   ship_candidates[projectile_name].proximity = args.ship_proximity
+  if args.incoming == " (Incoming)" then
+    ship_candidates[projectile_name].type = ship_candidates[projectile_name].type..args.incoming
+    ship_candidates[projectile_name].incoming = 1
+  end
 end
 
 function triggerShipVelocity(name, line, args, styles)
@@ -1280,6 +1296,10 @@ function triggerProjectileVelocity(name, line, args, styles)
   ship_candidates[projectile_name].type = "Projectile"
   ship_candidates[projectile_name].name = projectile_name
   ship_candidates[projectile_name].velocity = args.ship_velocity
+  if args.incoming == " (Incoming)" then
+    ship_candidates[projectile_name].type = ship_candidates[projectile_name].type..args.incoming
+    ship_candidates[projectile_name].incoming = 1
+  end
 end
 
 function triggerProximityAlert(name, line, args, styles)
@@ -1303,6 +1323,7 @@ function OnPluginInstall()
   ColourNote ("black", "yellow", "            You are using SpaceHud                ")
   ColourNote ("black", "yellow", "    Type 'spacehelp' for help getting started     ")
   drawWindow()
+  WindowSetZOrder (win, -1)
 end
 
 function OnPluginClose ()
