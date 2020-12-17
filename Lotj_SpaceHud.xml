@@ -85,7 +85,7 @@ spacedebug <1/0>     - Turn debugging on (1) or off (0)
   enabled="y"
   name="fleetRadar"
   group="captureSpace"
-  match="^L\[((?P<ship_leader_type>[a-zA-Z0-9 \-]+) \'(?P<ship_leader_name>[a-zA-Z0-9 ]+)\'|(Unknown) |(None    )|[\s]+)\]:P\[(?P<ship_position>[a-zA-Z]+)[\s]*\] (?P<ship_line>(?P<ship_type>[a-zA-Z0-9 \-]+) \'(?P<ship_name>[a-zA-Z0-9 ]+)\'[\s]+(?P<ship_x>[0-9\-]+) (?P<ship_y>[0-9\-]+) (?P<ship_z>[0-9\-]+))$"
+  match="^L\[((?P<ship_leader_type>[a-zA-Z0-9 \-]+) \'(?P<ship_leader_name>[a-zA-Z0-9 ]+)\'|(Unknown) |(None    )|[\s]+)\]:P\[(?P<ship_position>[a-zA-Z]+)*[\s]*\] (?P<ship_line>(?P<ship_type>[a-zA-Z0-9 \-]+) \'(?P<ship_name>[a-zA-Z0-9 ]+)\'[\s]+(?P<ship_x>[0-9\-]+) (?P<ship_y>[0-9\-]+) (?P<ship_z>[0-9\-]+))$"
   regexp="y"
   script="triggerFleetRadar"
   sequence="100"
